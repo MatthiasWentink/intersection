@@ -3,6 +3,8 @@ from sympy import *
 from midiutil import MIDIFile
 import numpy as np
 
+from track import Track
+
 def get_velocity(x,y,intersection_t):
     x = diff(x,Symbol('theta')).subs({'theta':intersection_t})
     y = diff(y,Symbol('theta')).subs({'theta':intersection_t})
@@ -16,7 +18,6 @@ def normalize_velocities(x):
     return [int(50+50*velocity) for velocity in softmax]
 
 def get_intersection(x,y, pitch, t_range=[-20*pi,20*pi]):
-    # Return intersectionion with axis as well as velocity on those points
     original = solve(x)
     result = []
     for root in original:
@@ -29,7 +30,7 @@ def get_intersection(x,y, pitch, t_range=[-20*pi,20*pi]):
             i = i + 1
             current_t = root + i * abs(period)
     result = sorted(result)
-    return result, get_velocities(x,y, result), pitch
+    return Track(result, get_velocities(x,y, result), pitch)
    
 def in_range(number: int,range: list):
     return N(number) >= range[0] and N(number) <= range[1] and number.is_real
@@ -48,13 +49,13 @@ def intersections_to_midi(bpm, file_name="rhythm", *tracks):
     midi.addTempo(track=0, time=0, tempo=bpm)
 
     beats = bpm / 60 * 4
-    times = [time for track in tracks for time in track[0]]
+    times = [time for track in tracks for time in track.times]
     start, end = min(times), max(times)
     for track in tracks:
-        track_times = intersections_to_time(track[0],start,end, beats)
-        track_volumes = normalize_velocities(track[1])
+        track_times = intersections_to_time(track.times,start,end, beats)
+        track_volumes = normalize_velocities(track.volume)
         for i in range(len(track_times)):
-            midi.addNote(track=0, channel=0, time=track_times[i], pitch=track[2], duration=0.5, volume=track_volumes[i])   
+            midi.addNote(track=0, channel=0, time=track_times[i], pitch=track.pitch, duration=0.5, volume=track_volumes[i])   
     
     with open("output/" + file_name + ".mid", "wb") as f:
         midi.writeFile(f)
@@ -67,7 +68,6 @@ def intersection_with_function(x,y,fun, pitch, t_range=[-2*pi,2*pi]):
     substitution = fun.subs({'x':x}) - y
     intersections = solve(substitution)
     solutions = [intersection for intersection in intersections if N(intersection) >= t_range[0] and N(intersection) <= t_range[1]]
-    print(solutions)
     result = []
     for solution in solutions:
         i = 0
@@ -78,7 +78,5 @@ def intersection_with_function(x,y,fun, pitch, t_range=[-2*pi,2*pi]):
                 result.append(current_t)
             i = i + 1
             current_t = solution + i * abs(period)
-    print(result)
     result = sorted(result)
-
-    return result, get_velocities(x,y,result), pitch
+    return Track(result, get_velocities(x,y,result), pitch)
