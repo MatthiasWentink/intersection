@@ -17,4 +17,4 @@ if __name__ == "__main__":
     hat = midi_generator.intersection_with_function(x_t,y_t,fun,42,t_range=t_range)
     hat2 = midi_generator.intersection_with_function(x_t,y_t,sympify("1"),53,t_range=t_range)
     plotter.plot_functions(x_t,y_t,t_range,fun,sympify("1"))
-    midi_generator.intersections_to_midi(120,kick,snare,hat,hat2)
+    midi_generator.intersections_to_midi(120,"fakka",kick,snare,hat,hat2)

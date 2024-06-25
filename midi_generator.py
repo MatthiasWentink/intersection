@@ -43,7 +43,7 @@ def get_period(numbers):
         eligible.remove(0)
     return min([number for number in eligible if number.is_real])
 
-def intersections_to_midi(bpm, *tracks):
+def intersections_to_midi(bpm, file_name="rhythm", *tracks):
     midi = MIDIFile(1)
     midi.addTempo(track=0, time=0, tempo=bpm)
 
@@ -56,7 +56,7 @@ def intersections_to_midi(bpm, *tracks):
         for i in range(len(track_times)):
             midi.addNote(track=0, channel=0, time=track_times[i], pitch=track[2], duration=0.5, volume=track_volumes[i])   
     
-    with open('rhythm.mid', "wb") as f:
+    with open("output/" + file_name + ".mid", "wb") as f:
         midi.writeFile(f)
 
 def intersections_to_time(track, start, end, beats):
