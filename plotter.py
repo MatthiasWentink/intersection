@@ -8,7 +8,7 @@ def plot_functions(x_t,y_t,t_range,*fun):
     y_func = lambdify(Symbol('theta'), y_t, modules=['numpy'])
 
     # Generate values for t
-    t_values = np.linspace(t_range[0], t_range[1], 400)
+    t_values = np.linspace(t_range.min, t_range.max, 400)
 
     # Calculate the corresponding x and y values for the parametric plot
     x_values = x_func(t_values)

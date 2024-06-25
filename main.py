@@ -1,6 +1,7 @@
 import midi_generator
 import plotter
-from sympy import *
+from interval import Interval
+from sympy import Symbol, sympify
 import math
 
 if __name__ == "__main__":
@@ -9,7 +10,7 @@ if __name__ == "__main__":
     x, y = Symbol("x"), Symbol("y")
     x_t = sympify("cos(theta)")
     y_t = sympify("sin(4*theta)")
-    t_range = [0,2*math.pi]
+    t_range = Interval(0,2*math.pi)
     fun = sympify("x^2")
     
     kick = midi_generator.get_intersection(y_t,x_t,36,t_range=t_range)
